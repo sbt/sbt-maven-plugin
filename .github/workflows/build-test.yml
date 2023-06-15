@@ -19,8 +19,18 @@ jobs:
     with:
       java: 17, 11
       scala: 2.12.18
-      cmd: |
-        sbt ++$MATRIX_SCALA test ^scripted
+      add-dimensions: >-
+        {
+          "sbt": [ "1.9.0" ]
+        }
+      cmd: >-
+        sbt "
+          set scriptedSbt := \"$MATRIX_SBT\";
+          set scriptedLaunchOpts += \"-Dscala.version=$MATRIX_SCALA\";
+          show scriptedSbt;
+          show scriptedLaunchOpts;
+          scripted;
+        "  
 
   finish:
     name: Finish

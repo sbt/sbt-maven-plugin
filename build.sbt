@@ -1,4 +1,11 @@
 lazy val `sbt-maven-plugin` = (project in file(".")).enablePlugins(SbtWebBase)
+  .settings(
+    scriptedLaunchOpts ++= Seq(
+      s"-Dplugin.version=${version.value}",
+      "-Xmx128m"
+    ),
+    scriptedBufferLog := false
+  )
 
 sonatypeProfileName := "com.github.sbt.sbt-maven-plugin" // See https://issues.sonatype.org/browse/OSSRH-77819#comment-1203625
 
