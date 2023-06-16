@@ -13,6 +13,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check-code-style:
+    name: Code Style # scalafmt
+    uses: playframework/.github/.github/workflows/cmd.yml@v3
+    with:
+      cmd: sbt validateCode
+
   tests:
     name: Tests
     uses: playframework/.github/.github/workflows/cmd.yml@v3

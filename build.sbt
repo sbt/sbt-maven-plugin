@@ -1,4 +1,5 @@
-lazy val `sbt-maven-plugin` = (project in file(".")).enablePlugins(SbtWebBase)
+lazy val `sbt-maven-plugin` = (project in file("."))
+  .enablePlugins(SbtWebBase)
   .settings(
     scriptedLaunchOpts ++= Seq(
       s"-Dplugin.version=${version.value}",
@@ -31,3 +32,11 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
   dynverAssertTagVersion.value
   s
 }
+
+addCommandAlias(
+  "validateCode",
+  List(
+    "scalafmtSbtCheck",
+    "scalafmtCheckAll"
+  ).mkString(";")
+)
