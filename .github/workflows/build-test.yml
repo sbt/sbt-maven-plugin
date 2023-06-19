@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   check-code-style:
-    name: Code Style # scalafmt, javafmt
+    name: Code Style # scalafmt, javafmt, headerCheck
     uses: playframework/.github/.github/workflows/cmd.yml@v3
     with:
       cmd: sbt validateCode
