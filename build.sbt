@@ -37,6 +37,7 @@ addCommandAlias(
   "validateCode",
   List(
     "scalafmtSbtCheck",
-    "scalafmtCheckAll"
+    "scalafmtCheckAll",
+    "javafmtCheckAll"
   ).mkString(";")
 )
