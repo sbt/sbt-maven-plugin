@@ -1,3 +1,10 @@
+// Copyright (C) from 2023 The sbt contributors <https://github.com/sbt>
+
+import de.heikoseeberger.sbtheader.CommentStyle
+import de.heikoseeberger.sbtheader.FileType
+import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderPattern.commentBetween
+import de.heikoseeberger.sbtheader.LineCommentCreator
+
 lazy val `sbt-maven-plugin` = (project in file("."))
   .enablePlugins(SbtWebBase)
   .settings(
@@ -5,12 +12,23 @@ lazy val `sbt-maven-plugin` = (project in file("."))
       s"-Dplugin.version=${version.value}",
       "-Xmx128m"
     ),
-    scriptedBufferLog := false
+    scriptedBufferLog := false,
+    headerLicense := Some(
+      HeaderLicense.Custom("Copyright (C) from 2023 The sbt contributors <https://github.com/sbt>")
+    ),
+    Compile / headerMappings ++= Map(
+      FileType("sbt")        -> HeaderCommentStyle.cppStyleLineComment,
+      FileType("properties") -> HeaderCommentStyle.hashLineComment,
+      FileType("md")         -> CommentStyle(new LineCommentCreator("<!---", "-->"), commentBetween("<!---", "*", "-->")),
+    ),
+    (Compile / headerSources) ++=
+      ((baseDirectory.value ** ("*.properties" || "*.md" || "*.sbt"))
+        --- (baseDirectory.value ** "target" ** "*")).get ++
+        (baseDirectory.value / "project" ** "*.scala" --- (baseDirectory.value ** "target" ** "*")).get ++
+        (baseDirectory.value / "src" / "sbt-test" ** ("*.java" || "*.scala" || "*.sbt")).get()
   )
 
 sonatypeProfileName := "com.github.sbt.sbt-maven-plugin" // See https://issues.sonatype.org/browse/OSSRH-77819#comment-1203625
-
-//description := "..." // TODO
 
 developers += Developer(
   "playframework",
@@ -38,6 +56,7 @@ addCommandAlias(
   List(
     "scalafmtSbtCheck",
     "scalafmtCheckAll",
-    "javafmtCheckAll"
+    "javafmtCheckAll",
+    "headerCheck"
   ).mkString(";")
 )
