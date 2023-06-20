@@ -38,7 +38,8 @@ developers += Developer(
 )
 
 libraryDependencies ++= Seq(
-  "junit" % "junit" % "4.13.2" % "test"
+  "org.apache.maven.plugins" % "maven-plugin-plugin" % "3.9.0",
+  "junit"                    % "junit"               % "4.13.2" % "test",
 )
 
 // Customise sbt-dynver's behaviour to make it work with tags which aren't v-prefixed
