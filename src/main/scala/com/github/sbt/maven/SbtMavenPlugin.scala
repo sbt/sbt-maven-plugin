@@ -29,14 +29,31 @@ object SbtMavenPlugin extends AutoPlugin {
   override def requires = sbt.plugins.JvmPlugin
 
   object autoImport {
-    val mavenPluginGoalPrefix = settingKey[String]("Maven plugin goal prefix")
+    val mavenPluginGoalPrefix   = settingKey[String]("Maven Plugin goal prefix")
+    val mavenVersion            = settingKey[String]("Maven version")
+    val mavenPluginToolsVersion = settingKey[String]("Maven Plugin Tools version")
   }
 
   import autoImport.*
-  override lazy val projectSettings: Seq[Setting[?]] = inConfig(Compile)(mavenPluginSettings)
+  override lazy val globalSettings: Seq[Setting[?]] = Seq(
+    mavenVersion            := "3.3.9",
+    mavenPluginToolsVersion := "3.3",
+  )
+
+  override lazy val projectSettings: Seq[Setting[?]] =
+    inConfig(Compile)(mavenPluginSettings) ++
+      dependenciesSettings
 
   private def mavenPluginSettings: Seq[Setting[?]] = Seq(
     Compile / resourceGenerators += generateMavenPluginXml.taskValue,
+  )
+
+  private lazy val dependenciesSettings: Seq[Setting[?]] = Seq(
+    libraryDependencies ++= Seq(
+      "org.apache.maven"              % "maven-core"               % mavenVersion.value            % Provided,
+      "org.apache.maven"              % "maven-plugin-api"         % mavenVersion.value            % Provided,
+      "org.apache.maven.plugin-tools" % "maven-plugin-annotations" % mavenPluginToolsVersion.value % Provided,
+    )
   )
 
   private def createPluginDescriptor(
