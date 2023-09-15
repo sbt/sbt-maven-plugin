@@ -5,10 +5,17 @@
 package com.github.sbt.maven
 
 import java.io.File
+import java.nio.file.Files
 
 import sbt.*
+import sbt.io.PathFinder
+import sbt.librarymanagement.Configurations
 import sbt.librarymanagement.Configurations.Compile
+import sbt.librarymanagement.CrossVersion
+import sbt.Def.settingKey
+import sbt.Def.taskKey
 import sbt.Keys.*
+import sbt.Keys.sourceDirectory
 
 import org.apache.maven.artifact.Artifact
 import org.apache.maven.artifact.DefaultArtifact
@@ -32,27 +39,47 @@ object SbtMavenPlugin extends AutoPlugin {
     val mavenPluginGoalPrefix   = settingKey[String]("Maven Plugin goal prefix")
     val mavenVersion            = settingKey[String]("Maven version")
     val mavenPluginToolsVersion = settingKey[String]("Maven Plugin Tools version")
+
+    val ScriptedConf      = Configurations.config("scripted-maven").hide
+    val scriptedClasspath = taskKey[PathFinder]("")
+    val scriptedLaunchOpts =
+      settingKey[Seq[String]]("options to pass to jvm launching Maven tasks")
+    val scripted = inputKey[Unit]("")
   }
 
   import autoImport.*
   override lazy val globalSettings: Seq[Setting[?]] = Seq(
-    mavenVersion            := "3.3.9",
-    mavenPluginToolsVersion := "3.3",
+    mavenVersion            := "3.9.4",
+    mavenPluginToolsVersion := "3.9.0",
+    scriptedLaunchOpts      := Seq()
   )
 
   override lazy val projectSettings: Seq[Setting[?]] =
     inConfig(Compile)(mavenPluginSettings) ++
-      dependenciesSettings
+      dependenciesSettings ++
+      scriptedMavenSettings
 
   private def mavenPluginSettings: Seq[Setting[?]] = Seq(
     Compile / resourceGenerators += generateMavenPluginXml.taskValue,
+  )
+
+  private def scriptedMavenSettings: Seq[Setting[?]] = Seq(
+    ivyConfigurations += ScriptedConf,
+    scriptedClasspath := Def.task {
+      PathFinder(Classpaths.managedJars(ScriptedConf, classpathTypes.value, Keys.update.value).map(_.data))
+    }.value,
+    scripted / sourceDirectory := sourceDirectory.value / "maven-test",
+    scripted                   := scriptedTask.evaluated,
+    libraryDependencies ++= Seq(
+      "org.apache.maven" % "apache-maven" % mavenVersion.value % ScriptedConf
+    )
   )
 
   private lazy val dependenciesSettings: Seq[Setting[?]] = Seq(
     libraryDependencies ++= Seq(
       "org.apache.maven"              % "maven-core"               % mavenVersion.value            % Provided,
       "org.apache.maven"              % "maven-plugin-api"         % mavenVersion.value            % Provided,
-      "org.apache.maven.plugin-tools" % "maven-plugin-annotations" % mavenPluginToolsVersion.value % Provided,
+      "org.apache.maven.plugin-tools" % "maven-plugin-annotations" % mavenPluginToolsVersion.value % Provided
     )
   )
 
@@ -144,6 +171,88 @@ object SbtMavenPlugin extends AutoPlugin {
 
   private def isAnalyzedDependency(configuration: ConfigRef) = {
     Seq(Compile, Runtime).contains(configuration)
+  }
+
+  private def scriptedTask = Def.inputTask {
+    import sbt.complete.Parsers.*
+
+    // Publish Maven Plugin into local Maven Repo
+    publishM2.value
+
+    val scriptedSourceDir = (scripted / sourceDirectory).value
+    if (scriptedSourceDir.isDirectory && scriptedSourceDir.exists()) {
+      val tests: Seq[File] = (OptSpace ~> StringBasic).?.parsed
+        .fold(scriptedSourceDir.listFiles().toSeq.filter(_.isDirectory)) { dir =>
+          Seq(scriptedSourceDir / dir)
+        }
+        .filter(testDir => (testDir / "test").exists)
+
+      val results = tests.map { directory =>
+        runTest(
+          version.value,
+          directory,
+          scriptedClasspath.value.get(),
+          scriptedLaunchOpts.value,
+          streams.value.log
+        )
+      }
+      results.collect {
+        case (name, false) => name
+      } match {
+        case Nil         => // success
+        case failedTests => sys.error(failedTests.mkString("Maven tests failed: ", ",", ""))
+      }
+    }
+  }
+
+  private def runTest(
+      pluginVersion: String,
+      directory: File,
+      classpath: Seq[File],
+      opts: Seq[String],
+      log: Logger
+  ): (String, Boolean) = {
+    log.info(s"${scala.Console.BOLD} Executing Maven: ${directory} ${scala.Console.RESET}")
+
+    val executions = IO
+      .readLines(directory / "test")
+      .map(_.trim)
+      .filter(_.nonEmpty)
+      .filterNot(_.startsWith("#")) // comments
+
+    val testDir = Files.createTempDirectory("maven-test-").toFile
+    try {
+      IO.copyDirectory(directory, testDir)
+
+      val args = Seq(
+        "-cp",
+        classpath.map(_.getAbsolutePath).mkString(File.pathSeparator),
+        s"-Dmaven.multiModuleProjectDirectory=${testDir.getAbsolutePath}",
+        s"-Dplugin.version=${pluginVersion}"
+      ) ++
+        opts ++
+        Seq(
+          "org.apache.maven.cli.MavenCli",
+          "--no-transfer-progress", // Do not show Maven download progress
+        )
+
+      log.info(
+        s"Running maven test ${directory.getName} with arguments ${args.mkString(" ")}"
+      )
+
+      directory.getName -> executions.foldLeft(true) { (success, execution) =>
+        if (success) {
+          val mavenParams = execution.substring(execution.indexOf('>') + 1).trim
+          log.info(s"Executing mvn ${mavenParams}")
+          val rc = Fork.java(ForkOptions().withWorkingDirectory(testDir), args ++ mavenParams.split("\\s+"))
+          if (execution.startsWith("->")) rc != 0 else rc == 0
+        } else {
+          false
+        }
+      }
+    } finally {
+      IO.delete(testDir)
+    }
   }
 
 }

@@ -4,6 +4,9 @@ lazy val root = project
   .in(file("."))
   .enablePlugins(SbtMavenPlugin)
   .settings(
+    crossPaths            := false,
+    autoScalaLibrary      := false,
+    organization          := "com.example",
     name                  := "Simple",
     mavenPluginGoalPrefix := "simple",
     libraryDependencies ++= Seq(
