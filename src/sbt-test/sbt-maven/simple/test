@@ -1,3 +1,4 @@
 > package
-$ exists target/scala-2.12/resource_managed/main/META-INF/maven/plugin.xml
+$ exists target/classes/META-INF/maven/plugin.xml
 > test
+> scripted
