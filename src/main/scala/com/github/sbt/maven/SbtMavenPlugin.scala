@@ -40,9 +40,9 @@ object SbtMavenPlugin extends AutoPlugin {
     val mavenVersion            = settingKey[String]("Maven version")
     val mavenPluginToolsVersion = settingKey[String]("Maven Plugin Tools version")
 
-    val ScriptedConf      = Configurations.config("scripted-maven").hide
-    val scriptedClasspath = taskKey[PathFinder]("")
-    val scriptedLaunchOpts =
+    val MavenConf      = Configurations.config("scripted-maven").hide
+    val mavenClasspath = taskKey[PathFinder]("")
+    val mavenLaunchOpts =
       settingKey[Seq[String]]("options to pass to jvm launching Maven tasks")
     val scripted = inputKey[Unit]("")
   }
@@ -51,7 +51,7 @@ object SbtMavenPlugin extends AutoPlugin {
   override lazy val globalSettings: Seq[Setting[?]] = Seq(
     mavenVersion            := "3.9.4",
     mavenPluginToolsVersion := "3.9.0",
-    scriptedLaunchOpts      := Seq()
+    mavenLaunchOpts         := Seq()
   )
 
   override lazy val projectSettings: Seq[Setting[?]] =
@@ -64,14 +64,14 @@ object SbtMavenPlugin extends AutoPlugin {
   )
 
   private def scriptedMavenSettings: Seq[Setting[?]] = Seq(
-    ivyConfigurations += ScriptedConf,
-    scriptedClasspath := Def.task {
-      PathFinder(Classpaths.managedJars(ScriptedConf, classpathTypes.value, Keys.update.value).map(_.data))
+    ivyConfigurations += MavenConf,
+    mavenClasspath := Def.task {
+      PathFinder(Classpaths.managedJars(MavenConf, classpathTypes.value, Keys.update.value).map(_.data))
     }.value,
     scripted / sourceDirectory := sourceDirectory.value / "maven-test",
     scripted                   := scriptedTask.evaluated,
     libraryDependencies ++= Seq(
-      "org.apache.maven" % "apache-maven" % mavenVersion.value % ScriptedConf
+      "org.apache.maven" % "apache-maven" % mavenVersion.value % MavenConf
     )
   )
 
@@ -189,10 +189,9 @@ object SbtMavenPlugin extends AutoPlugin {
 
       val results = tests.map { directory =>
         runTest(
-          version.value,
           directory,
-          scriptedClasspath.value.get(),
-          scriptedLaunchOpts.value,
+          mavenClasspath.value.get(),
+          mavenLaunchOpts.value,
           streams.value.log
         )
       }
@@ -206,7 +205,6 @@ object SbtMavenPlugin extends AutoPlugin {
   }
 
   private def runTest(
-      pluginVersion: String,
       directory: File,
       classpath: Seq[File],
       opts: Seq[String],
@@ -227,8 +225,7 @@ object SbtMavenPlugin extends AutoPlugin {
       val args = Seq(
         "-cp",
         classpath.map(_.getAbsolutePath).mkString(File.pathSeparator),
-        s"-Dmaven.multiModuleProjectDirectory=${testDir.getAbsolutePath}",
-        s"-Dplugin.version=${pluginVersion}"
+        s"-Dmaven.multiModuleProjectDirectory=${testDir.getAbsolutePath}"
       ) ++
         opts ++
         Seq(
