@@ -38,7 +38,7 @@ developers += Developer(
 )
 
 libraryDependencies ++= Seq(
-  "org.apache.maven.plugins" % "maven-plugin-plugin" % "3.8.2",
+  "org.apache.maven.plugins" % "maven-plugin-plugin" % "3.11.0",
   "junit"                    % "junit"               % "4.13.2" % Test
 )
 
