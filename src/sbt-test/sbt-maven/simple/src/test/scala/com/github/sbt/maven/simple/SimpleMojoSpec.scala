@@ -50,12 +50,12 @@ class SimpleMojoSpec extends AnyWordSpec with should.Matchers {
       (mojo \\ "phase").text should be("generate-sources")
     }
 
-    val params = mojo \\ "parameters" \\ "parameter"
+    val params        = mojo \\ "parameters" \\ "parameter"
     val configuration = mojo \\ "configuration"
 
     "have correct string parameter" in {
       val param = params.find(n => (n \\ "name").text == "string")
-      val conf = configuration \\ "string"
+      val conf  = configuration \\ "string"
       param should not be empty
       (param.get \\ "type").text should be("java.lang.String")
       (param.get \\ "required").text.toBoolean should be(true)
@@ -67,7 +67,7 @@ class SimpleMojoSpec extends AnyWordSpec with should.Matchers {
 
     "have correct file parameter" in {
       val param = params.find(n => (n \\ "name").text == "directory")
-      val conf = configuration \\ "directory"
+      val conf  = configuration \\ "directory"
       param should not be empty
       (param.get \\ "type").text should be("java.io.File")
       (param.get \\ "required").text.toBoolean should be(true)
@@ -79,7 +79,7 @@ class SimpleMojoSpec extends AnyWordSpec with should.Matchers {
 
     "have correct map parameter" in {
       val param = params.find(n => (n \\ "name").text == "map")
-      val conf = configuration \\ "map"
+      val conf  = configuration \\ "map"
       param should not be empty
       (param.get \\ "type").text should be("java.util.Map")
       (param.get \\ "required").text.toBoolean should be(false)
@@ -90,7 +90,7 @@ class SimpleMojoSpec extends AnyWordSpec with should.Matchers {
 
     "have correct project parameter" in {
       val param = params.find(n => (n \\ "name").text == "project")
-      val conf = configuration \\ "project"
+      val conf  = configuration \\ "project"
       param should not be empty
       (param.get \\ "type").text should be("org.apache.maven.project.MavenProject")
       (param.get \\ "required").text.toBoolean should be(true)
@@ -102,7 +102,7 @@ class SimpleMojoSpec extends AnyWordSpec with should.Matchers {
 
     "have correct set parameter" in {
       val param = params.find(n => (n \\ "name").text == "set")
-      val conf = configuration \\ "set"
+      val conf  = configuration \\ "set"
       param should not be empty
       (param.get \\ "type").text should be("java.util.Set")
       (param.get \\ "required").text.toBoolean should be(false)
