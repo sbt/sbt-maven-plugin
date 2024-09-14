@@ -24,7 +24,7 @@ jobs:
     uses: playframework/.github/.github/workflows/cmd.yml@v3
     with:
       java: 17, 11
-      scala: 2.12.19
+      scala: 2.12.20
       add-dimensions: >-
         {
           "sbt": [ "1.9.0" ]
