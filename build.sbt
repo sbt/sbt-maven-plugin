@@ -28,8 +28,6 @@ lazy val `sbt-maven-plugin` = (project in file("."))
         (baseDirectory.value / "src" / "sbt-test" ** ("*.java" || "*.scala" || "*.sbt")).get()
   )
 
-sonatypeProfileName := "com.github.sbt.sbt-maven-plugin" // See https://issues.sonatype.org/browse/OSSRH-77819#comment-1203625
-
 developers += Developer(
   "playframework",
   "The Play Framework Team",
