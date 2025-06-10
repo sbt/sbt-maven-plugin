@@ -13,7 +13,7 @@ lazy val `sbt-maven-plugin` = (project in file("."))
       "-Xmx128m"
     ),
     scriptedBufferLog := false,
-    headerLicense := Some(
+    headerLicense     := Some(
       HeaderLicense.Custom("Copyright (C) from 2023 The sbt contributors <https://github.com/sbt>")
     ),
     Compile / headerMappings ++= Map(
