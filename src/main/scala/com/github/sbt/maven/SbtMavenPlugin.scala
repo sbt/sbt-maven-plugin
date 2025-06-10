@@ -40,8 +40,8 @@ object SbtMavenPlugin extends AutoPlugin {
     val mavenVersion            = settingKey[String]("Maven version")
     val mavenPluginToolsVersion = settingKey[String]("Maven Plugin Tools version")
 
-    val MavenConf      = Configurations.config("scripted-maven").hide
-    val mavenClasspath = taskKey[PathFinder]("")
+    val MavenConf       = Configurations.config("scripted-maven").hide
+    val mavenClasspath  = taskKey[PathFinder]("")
     val mavenLaunchOpts =
       settingKey[Seq[String]]("options to pass to jvm launching Maven tasks")
     val scripted = inputKey[Unit]("")
