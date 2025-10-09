@@ -1,9 +1,9 @@
 // Copyright (C) from 2023 The sbt contributors <https://github.com/sbt>
 
-import de.heikoseeberger.sbtheader.CommentStyle
-import de.heikoseeberger.sbtheader.FileType
-import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport.HeaderPattern.commentBetween
-import de.heikoseeberger.sbtheader.LineCommentCreator
+import sbtheader.CommentStyle
+import sbtheader.FileType
+import sbtheader.HeaderPlugin.autoImport.HeaderPattern.commentBetween
+import sbtheader.LineCommentCreator
 
 lazy val `sbt-maven-plugin` = (project in file("."))
   .enablePlugins(SbtWebBase)
