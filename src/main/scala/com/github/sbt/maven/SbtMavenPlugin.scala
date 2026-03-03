@@ -28,7 +28,6 @@ import org.apache.maven.tools.plugin.extractor.MojoDescriptorExtractor
 import org.apache.maven.tools.plugin.generator.GeneratorUtils.toComponentDependencies
 import org.apache.maven.tools.plugin.generator.PluginDescriptorFilesGenerator
 import org.apache.maven.tools.plugin.DefaultPluginToolsRequest
-import org.codehaus.plexus.logging
 import org.codehaus.plexus.util.ReflectionUtils.setVariableValueInObject
 
 object SbtMavenPlugin extends AutoPlugin {
@@ -144,10 +143,9 @@ object SbtMavenPlugin extends AutoPlugin {
     project
   }
 
-  private def createMojoExtractor(logger: logging.Logger): MojoDescriptorExtractor = {
+  private def createMojoExtractor(): MojoDescriptorExtractor = {
     val extractor = new JavaAnnotationsMojoDescriptorExtractor()
     val scanner   = new DefaultMojoAnnotationsScanner
-    scanner.enableLogging(logger)
     setVariableValueInObject(extractor, "mojoAnnotationsScanner", scanner)
     extractor
   }
@@ -161,7 +159,7 @@ object SbtMavenPlugin extends AutoPlugin {
     val artifacts          = findRuntimeDependencies(update.value, allDependencies.value, crossVersion)
     val pluginDescriptor   = createPluginDescriptor(mavenPluginGoalPrefix.value, projectId, projectInfo.value, artifacts)
     val request            = new DefaultPluginToolsRequest(project, pluginDescriptor)
-    val extractor          = createMojoExtractor(new SbtLogger(streams.value.log))
+    val extractor          = createMojoExtractor()
     val generator          = new PluginDescriptorFilesGenerator()
 
     extractor.execute(request).forEach { mojo => pluginDescriptor.addMojo(mojo) }
