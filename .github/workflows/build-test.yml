@@ -15,15 +15,15 @@ concurrency:
 jobs:
   check-code-style:
     name: Code Style # scalafmt, javafmt, headerCheck
-    uses: playframework/.github/.github/workflows/cmd.yml@v3
+    uses: playframework/.github/.github/workflows/cmd.yml@v4
     with:
       cmd: sbt validateCode
 
   tests:
     name: Tests
-    uses: playframework/.github/.github/workflows/cmd.yml@v3
+    uses: playframework/.github/.github/workflows/cmd.yml@v4
     with:
-      java: 17, 11
+      java: 25, 21, 17, 11
       scala: 2.12.20
       add-dimensions: >-
         {
@@ -44,4 +44,4 @@ jobs:
     if: github.event_name == 'pull_request'
     needs: # Should be last
       - "tests"
-    uses: playframework/.github/.github/workflows/rtm.yml@v3
+    uses: playframework/.github/.github/workflows/rtm.yml@v4
