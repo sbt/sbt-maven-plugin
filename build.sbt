@@ -5,7 +5,8 @@ import sbtheader.FileType
 import sbtheader.HeaderPlugin.autoImport.HeaderPattern.commentBetween
 import sbtheader.LineCommentCreator
 
-lazy val `sbt-maven-plugin` = (project in file("."))
+lazy val `sbt-maven-plugin` = project
+  .in(file("."))
   .enablePlugins(SbtWebBase)
   .settings(
     scriptedLaunchOpts ++= Seq(
