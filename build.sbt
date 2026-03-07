@@ -5,7 +5,8 @@ import sbtheader.FileType
 import sbtheader.HeaderPlugin.autoImport.HeaderPattern.commentBetween
 import sbtheader.LineCommentCreator
 
-lazy val `sbt-maven-plugin` = (project in file("."))
+lazy val `sbt-maven-plugin` = project
+  .in(file("."))
   .enablePlugins(SbtWebBase)
   .settings(
     scriptedLaunchOpts ++= Seq(
@@ -37,7 +38,7 @@ developers += Developer(
 
 libraryDependencies ++= Seq(
   "org.apache.maven.plugins" % "maven-plugin-plugin" % "3.15.2",
-  "org.apache.maven"         % "maven-core"          % "3.9.12",
+  "org.apache.maven"         % "maven-core"          % "3.9.13",
   "junit"                    % "junit"               % "4.13.2" % Test
 )
 
@@ -51,7 +52,7 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
   s
 }
 
-crossScalaVersions += "3.7.3"
+crossScalaVersions += "3.7.4"
 
 scalacOptions --= {
   scalaBinaryVersion.value match {
