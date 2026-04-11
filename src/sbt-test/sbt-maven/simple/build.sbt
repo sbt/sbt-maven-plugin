@@ -4,6 +4,9 @@ lazy val root = project
   .in(file("."))
   .enablePlugins(SbtMavenPlugin)
   .settings(
+    // Classic target layout so scripted checks keep working on sbt 2.
+    target                := baseDirectory.value / "target",
+    Compile / classDirectory := target.value / "classes",
     crossPaths            := false,
     autoScalaLibrary      := false,
     organization          := "com.example",

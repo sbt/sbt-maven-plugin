@@ -37,7 +37,7 @@ jobs:
         ]
       cmd: >-
         sbt "
-          + Test/compile;
+          ++$MATRIX_SCALA Test/compile;
           set scriptedSbt := \"$MATRIX_SBT\";
           set scriptedLaunchOpts += \"-Dscala.version=$MATRIX_SCALA\";
           show scriptedSbt;
