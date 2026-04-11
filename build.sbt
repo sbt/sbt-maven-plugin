@@ -54,15 +54,6 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
 
 crossScalaVersions += "3.8.3"
 
-scalacOptions --= {
-  scalaBinaryVersion.value match {
-    case "3" =>
-      Seq("-Xfatal-warnings", "-Werror")
-    case _ =>
-      Nil
-  }
-}
-
 scalacOptions ++= {
   scalaBinaryVersion.value match {
     case "2.12" => Seq("-Xsource:3", "-release:8")
