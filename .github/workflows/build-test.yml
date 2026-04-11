@@ -24,10 +24,10 @@ jobs:
     uses: playframework/.github/.github/workflows/cmd.yml@v4
     with:
       java: 25, 21, 17, 11
-      scala: 2.12.20
+      scala: 2.12.21
       add-dimensions: >-
         {
-          "sbt": [ "1.9.0" ]
+          "sbt": [ "1.12.9" ]
         }
       cmd: >-
         sbt "
