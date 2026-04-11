@@ -1,4 +1,4 @@
 > package
 > checkPluginXml
-> test
+> runCompatTests
 > scripted
