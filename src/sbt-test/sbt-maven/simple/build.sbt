@@ -1,12 +1,20 @@
 // Copyright (C) from 2023 The sbt contributors <https://github.com/sbt>
 
+lazy val checkPluginXml = taskKey[Unit]("Verify that the generated Maven plugin descriptor exists under target.")
+
 lazy val root = project
   .in(file("."))
   .enablePlugins(SbtMavenPlugin)
   .settings(
-    // Classic target layout so scripted checks keep working on sbt 2.
-    target                := baseDirectory.value / "target",
-    Compile / classDirectory := target.value / "classes",
+    checkPluginXml := {
+      val pluginXml =
+        if (sbtBinaryVersion.value == "1.0") {
+          target.value / "classes" / "META-INF" / "maven" / "plugin.xml"
+        } else {
+          target.value / "resource_managed" / "main" / "META-INF" / "maven" / "plugin.xml"
+        }
+      require(pluginXml.isFile, s"Expected generated plugin.xml at $pluginXml")
+    },
     crossPaths            := false,
     autoScalaLibrary      := false,
     organization          := "com.example",
