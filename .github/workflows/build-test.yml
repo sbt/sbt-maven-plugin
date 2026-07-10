@@ -32,7 +32,7 @@ jobs:
       exclude: >-
         [
           {"scala": "2.12.x", "sbt": "2.0.0-RC12"},
-          {"scala": "3.x", "sbt": "1.12.11"},
+          {"scala": "3.x", "sbt": "1.12.13"},
           {"java": "11", "scala": "3.x"}
         ]
       cmd: >-
