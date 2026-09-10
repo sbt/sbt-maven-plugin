@@ -52,7 +52,7 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
   s
 }
 
-crossScalaVersions += "3.8.4"
+crossScalaVersions += "3.9.0"
 
 scalacOptions ++= {
   scalaBinaryVersion.value match {
