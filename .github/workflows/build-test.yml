@@ -27,7 +27,7 @@ jobs:
       scala: 2.12.x, 3.x
       add-dimensions: >-
         {
-          "sbt": [ "1.12.11", "2.1.0-M1" ]
+          "sbt": [ "1.12.15", "2.1.0-M1" ]
         }
       exclude: >-
         [
