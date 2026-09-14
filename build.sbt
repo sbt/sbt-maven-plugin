@@ -52,7 +52,7 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
   s
 }
 
-crossScalaVersions += "3.8.4"
+crossScalaVersions += "3.9.0"
 
 scalacOptions ++= {
   scalaBinaryVersion.value match {
@@ -66,7 +66,7 @@ pluginCrossBuild / sbtVersion := {
     case "2.12" =>
       sbtVersion.value
     case _ =>
-      "2.0.0"
+      "2.1.0-M1"
   }
 }
 
