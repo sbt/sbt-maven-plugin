@@ -35,3 +35,7 @@ lazy val root = project
       "org.scalatest" %% "scalatest-wordspec" % "3.2.20" % Test,
     )
   )
+
+ThisBuild / scalaVersion := {
+  if (sbtVersion.value.startsWith("1.")) "2.12.21" else "3.9.0"
+}

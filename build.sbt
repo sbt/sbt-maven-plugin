@@ -5,6 +5,8 @@ import sbtheader.FileType
 import sbtheader.HeaderPlugin.autoImport.HeaderPattern.commentBetween
 import sbtheader.LineCommentCreator
 
+ThisBuild / scalaVersion := "2.12.21"
+
 lazy val `sbt-maven-plugin` = project
   .in(file("."))
   .enablePlugins(SbtWebBase)
@@ -52,7 +54,7 @@ Global / onLoad := (Global / onLoad).value.andThen { s =>
   s
 }
 
-crossScalaVersions += "3.9.0"
+crossScalaVersions := Seq("2.12.21", "3.9.0")
 
 scalacOptions ++= {
   scalaBinaryVersion.value match {
@@ -64,9 +66,9 @@ scalacOptions ++= {
 pluginCrossBuild / sbtVersion := {
   scalaBinaryVersion.value match {
     case "2.12" =>
-      sbtVersion.value
+      "1.12.15"
     case _ =>
-      "2.1.0-M1"
+      "2.1.0"
   }
 }
 
